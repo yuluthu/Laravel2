@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+#[Fillable(['name', 'email', 'password', 'tenant_id'])]
+#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+class User extends Authenticatable
+{
+    protected $with = ['tenant', 'apiKey'];
+
+    /** @use HasFactory<UserFactory> */
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function apiKey(): hasOne
+    {
+        $tokens = $this->hasOne(PersonalAccessToken::class, 'tokenable_id')->ofMany([
+            'id' => 'max',
+        ]);
+
+        return $tokens;
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'two_factor_confirmed_at' => 'datetime',
+        ];
+    }
+}

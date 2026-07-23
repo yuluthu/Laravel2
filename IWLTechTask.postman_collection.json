@@ -1,0 +1,154 @@
+{
+  "info": {
+    "_postman_id": "00dd844b-b39a-4083-91ab-bb2bcf188f0f",
+    "name": "IWLTechTask",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "2338255"
+  },
+  "item": [
+    {
+      "name": "Devices",
+      "item": [
+        {
+          "name": "List Devices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}club",
+              "host": [
+                "{{host}}club"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Telemetry",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"requestType\": \"storeClub\",\r\n    \"data\": {\r\n        \"name\": \"Bath Quadball Club\",\r\n        \"clubType\": 2,\r\n        \"active\": false\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}club",
+              "host": [
+                "{{host}}club"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Device Status",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}club/1",
+              "host": [
+                "{{host}}club"
+              ],
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Device",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"requestType\": \"updateClub\",\r\n    \"data\": {\r\n        \"name\": \"Werewolves of London\",\r\n        \"clubType\": 1\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}club/1",
+              "host": [
+                "{{host}}club"
+              ],
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "1|snXuIiicPphtvBaUDTJvfnG8zEmFPWT0zqOuicUj96e78abe",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          "pm.request.headers.add({\r",
+          "    key: \"Accept\",\r",
+          "    value: \"application/json\"\r",
+          "});"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "host",
+      "value": ""
+    },
+    {
+      "key": "devices_endpoint",
+      "value": ""
+    }
+  ]
+}
