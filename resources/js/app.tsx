@@ -4,14 +4,8 @@ import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from '@tanstack/react-query'
 
 const appName = import.meta.env.VITE_APP_NAME || 'IWL Tech Task MS';
-const queryClient = new QueryClient()
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
@@ -29,9 +23,6 @@ createInertiaApp({
     },
     strictMode: true,
     withApp(app) {
-        // return <QueryClientProvider client={queryClient}>
-        //     <TooltipProvider delayDuration={0}>{app}</TooltipProvider>;
-        // </QueryClientProvider> 
         return <TooltipProvider delayDuration={0}>{app}</TooltipProvider>;
     },
     progress: {

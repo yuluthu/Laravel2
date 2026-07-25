@@ -19,23 +19,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
-    protected $with = ['tenant', 'apiKey'];
-
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
-    }
-
-    public function apiKey(): hasOne
-    {
-        $tokens = $this->hasOne(PersonalAccessToken::class, 'tokenable_id')->ofMany([
-            'id' => 'max',
-        ]);
-
-        return $tokens;
     }
 
     /**
