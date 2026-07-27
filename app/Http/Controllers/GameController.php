@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\game;
-use App\Http\Requests\StoreGameRequest;
-use App\Http\Requests\UpdateGameRequest;
+use App\Http\Requests\Games\StoreGameRequest;
+use App\Http\Requests\Games\UpdateGameRequest;
+use App\Models\Game;
 
 class GameController extends Controller
 {
@@ -12,14 +12,6 @@ class GameController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
     {
         //
     }
@@ -35,15 +27,7 @@ class GameController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(game $game)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(game $game)
+    public function show(Game $game)
     {
         //
     }
@@ -51,7 +35,7 @@ class GameController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateGameRequest $request, game $game)
+    public function update(UpdateGameRequest $request, Game $game)
     {
         //
     }
@@ -59,7 +43,7 @@ class GameController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(game $game)
+    public function destroy(Game $game)
     {
         //
     }

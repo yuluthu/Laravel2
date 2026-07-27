@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoretournamentRequest;
-use App\Http\Requests\UpdatetournamentRequest;
-use App\tournament;
+use App\Http\Requests\Tournaments\StoreTournamentRequest;
+use App\Http\Requests\Tournaments\UpdateTournamentRequest;
+use App\Models\Tournament;
 
 class TournamentController extends Controller
 {
@@ -13,53 +13,52 @@ class TournamentController extends Controller
      */
     public function index()
     {
-        //
-    }
+        return response()->json(Tournament::listWithRelated());
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoretournamentRequest $request)
+    public function store(StoreTournamentRequest $request)
     {
-        //
+        $tournament = Tournament::factory()->make($request->input('data'));
+
+        $tournament['date_start'] = $tournament->formatDate(new \DateTime($request->input('data.date_start')));
+        $tournament['date_end'] = $tournament->formatDate(new \DateTime($request->input('data.date_end')));
+
+        $tournament->save();
+
+        return $tournament->findWithRelated($tournament->id);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(tournament $tournament)
+    public function show(Tournament $tournament)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(tournament $tournament)
-    {
-        //
+        return $tournament->findWithRelated($tournament->id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatetournamentRequest $request, tournament $tournament)
+    public function update(UpdateTournamentRequest $request, Tournament $tournament)
     {
-        //
+
+        $tournament->update($request->input('data'));
+
+        if ($tournament->isDirty()) {
+            $tournament->save();
+        }
+
+        return $tournament->findWithRelated($tournament->id);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(tournament $tournament)
+    public function destroy(Tournament $tournament)
     {
         //
     }

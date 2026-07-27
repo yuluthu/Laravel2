@@ -2,15 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Tournament;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Tournament;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Tournament>
+ * @extends Factory<Tournament>
  */
 class TournamentFactory extends Factory
 {
-    protected $model = Tournament::class;
     /**
      * Define the model's default state.
      *
@@ -19,10 +18,7 @@ class TournamentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => '',
-            'tournamentType' => 1,
-            'dateStart' => null,
-            'dateEnd' => null,
+            //
         ];
     }
 }

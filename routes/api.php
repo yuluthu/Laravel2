@@ -1,15 +1,20 @@
 <?php
 
-use App\Http\Controllers\DeviceController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ClubController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TournamentController;
 
-// v1 API
-Route::middleware(['auth:sanctum'])->group(function () {
-    // Route::apiResource('/v1/devices', DeviceController::class);
-    Route::controller(DeviceController::class)->group(function () {
-        Route::get('/v1/devices', 'index');
-        Route::get('/v1/devices/{device}', 'show');
-        Route::get('/v1/devices/{device}/status', 'status');
-        Route::post('v1/devices/{device}/telemetry', 'updateTelemetry');
-    });
-});
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+Route::apiResources([
+    'club' => ClubController::class,
+    'tournament' => TournamentController::class,
+    'team' => TeamController::class,
+    'game' => GameController::class,
+]);
+Route::get('/team/{team}/tournaments', [TeamController::class, 'listTournaments']);

@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Database\Factories\GameFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[HasFactory]
 #[Fillable(['tournament_id', 'team_a_id', 'team_b_id', 'start_time'])]
 class Game extends Model
 {
+    /** @use HasFactory<\Database\Factories\GameFactory> */
     use HasFactory;
 
     protected $table = 'games';
@@ -30,5 +30,4 @@ class Game extends Model
     {
         return $this->hasOne(Team::class);
     }
-
 }

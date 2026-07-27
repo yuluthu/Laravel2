@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Club;
 use App\Http\Requests\Teams\StoreTeamRequest;
 use App\Http\Requests\Teams\UpdateTeamRequest;
-use App\Team;
+use App\Models\Team;
+use App\Models\Club;
 use Illuminate\Support\Arr;
 
 class TeamController extends Controller
@@ -15,7 +15,7 @@ class TeamController extends Controller
      */
     public function index()
     {
-        return response()->json(Team::with('club')->orderBy('name')->get());
+        return response()->json(Team::listWithRelated());
     }
 
     /**
@@ -24,12 +24,12 @@ class TeamController extends Controller
     public function store(StoreTeamRequest $request)
     {
         $requestData = Arr::except($request->input('data'), 'club');
-        $requestData['clubId'] = Club::findOrFail($request->input('data.club'));
+        $requestData['club_id'] = Club::findOrFail($request->input('data.club'));
 
         $team = Team::factory()->make($requestData);
         $team->save();
 
-        return $team;
+        return $team->findWithRelated($team->id);
     }
 
     /**
@@ -37,7 +37,7 @@ class TeamController extends Controller
      */
     public function show(Team $team)
     {
-        return $team;
+        return $team->findWithRelated($team->id);
     }
 
     /**
@@ -47,7 +47,7 @@ class TeamController extends Controller
     {
         $requestData = Arr::except($request->input('data'), 'club');
         if ($request->has('club')) {
-            $requestData['clubId'] = Club::findOrFail($request->input('data.club'))->id;
+            $requestData['club_id'] = Club::findOrFail($request->input('data.club'))->id;
         }
 
         $team->update($requestData);
@@ -56,7 +56,12 @@ class TeamController extends Controller
             $team->save();
         }
 
-        return $team;
+        return $team->findWithRelated($team->id);
+    }
+
+    public function listTournaments(Team $team)
+    {
+        return response()->json($team->with('tournaments')->find($team->id));
     }
 
     /**

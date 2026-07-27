@@ -23,6 +23,9 @@ class BaseTournamentRequest extends FormRequest
                 'between:5,255',
                 'unique:tournaments,name',
             ],
+            'data.tournament_type' => 'sometimes|required|integer',
+            'data.date_start' => 'sometimes|required|date',
+            'data.date_end' => 'sometimes|required|date',
         ];
     }
 

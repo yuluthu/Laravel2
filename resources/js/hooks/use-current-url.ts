@@ -32,7 +32,7 @@ export function useCurrentUrl(): UseCurrentUrlReturn {
         page.url,
         typeof window !== 'undefined'
             ? window.location.origin
-            : 'http://192.168.1.64',
+            : 'http://localhost',
     ).pathname;
 
     const isCurrentUrl: IsCurrentUrlFn = (

@@ -24,7 +24,7 @@ class BaseClubRequest extends FormRequest
                 'between:5,255',
                 $this->club ? Rule::unique('clubs', 'name')->ignore($this->club->id) : 'unique:clubs,name',
             ],
-            'data.clubType' => 'sometimes|required|integer',
+            'data.club_type' => 'sometimes|required|integer',
         ];
     }
 
@@ -33,7 +33,7 @@ class BaseClubRequest extends FormRequest
         return [
             'data.name' => 'Another club with that name already exists',
             'data.name.between' => 'Club name must be between :min and :max characters',
-            'data.clubType.required' => 'No club type was specified',
+            'data.club_type.required' => 'No club type was specified',
         ];
     }
 }

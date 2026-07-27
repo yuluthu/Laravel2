@@ -2,15 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Game;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Game>
+ * @extends Factory<Game>
  */
 class GameFactory extends Factory
 {
-    protected $model = Game::class;
     /**
      * Define the model's default state.
      *
@@ -19,10 +18,7 @@ class GameFactory extends Factory
     public function definition(): array
     {
         return [
-            'tournament_id' => $this->faker->numberBetween(1, 10),
-            'team_a_id' => $this->faker->numberBetween(1, 20),
-            'team_b_id' => $this->faker->numberBetween(1, 20),
-            'start_time' => $this->faker->dateTimeBetween('-1 week', '+1 week'),
+            //
         ];
     }
 }
