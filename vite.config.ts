@@ -25,12 +25,6 @@ export default defineConfig({
   }), tailwindcss(), wayfinder({
     formVariants: true
   })],
-  server: {
-    host: '192.168.1.64',
-    cors: {
-      origin: 'http://192.168.1.64:8080',
-    }
-  },
   test: {
     projects: [{
       extends: true,

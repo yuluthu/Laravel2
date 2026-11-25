@@ -9,6 +9,16 @@ import {
 import { useState } from 'react';
 import { dashboard, login, register } from '@/routes';
 
+const theme = {
+    colour_background: '120b12',
+    colour_dark: '8f988c',
+    colour_primary: 'c8a2c8',
+    colour_secondary: '372137',
+    colour_text: 'f4f1ea',
+    colour_text_faded: 'c5ccc0',
+    colour_highlight: '5c375c',
+}
+
 const fixtures = [
     {
         group: 'Group A',
@@ -124,16 +134,16 @@ export default function Welcome({
     return (
         <>
             <Head title="Touchline — tournament organising" />
-            <div className="min-h-screen bg-[#101612] text-[#f4f1ea]">
-                <header className="sticky top-0 z-20 border-b border-white/10 bg-[#101612]/90 backdrop-blur">
+            <div className={`min-h-screen bg-[#${theme.colour_background}] text-[#${theme.colour_text}]`}>
+                <header className={`sticky top-0 z-20 border-b border-white/10 bg-[#${theme.colour_background}]/90 backdrop-blur`}>
                     <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
                         <a href="#top" className="flex items-center gap-2 font-semibold tracking-tight">
-                            <span className="grid size-8 place-items-center rounded-full bg-[#d6ff4b] text-[#14210a]">
+                            <span className={`grid size-8 place-items-center rounded-full bg-[#${theme.colour_primary}] text-[#${theme.colour_text}]`}>
                                 <Trophy className="size-4" />
                             </span>
                             Touchline
                         </a>
-                        <nav className="hidden items-center gap-8 text-sm text-[#c9cfc4] md:flex">
+                        <nav className={`hidden items-center gap-8 text-sm text-[#${theme.colour_text}] md:flex`}>
                             <a href="#features" className="hover:text-white">
                                 Features
                             </a>
@@ -148,7 +158,7 @@ export default function Welcome({
                             {auth.user ? (
                                 <Link
                                     href={dashboard()}
-                                    className="rounded-full bg-[#d6ff4b] px-4 py-2 text-sm font-semibold text-[#14210a] hover:bg-[#e4ff86]"
+                                    className={`rounded-full bg-[#${theme.colour_primary}] px-4 py-2 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-[#${theme.colour_primary}]`}
                                 >
                                     Dashboard
                                 </Link>
@@ -156,14 +166,14 @@ export default function Welcome({
                                 <>
                                     <Link
                                         href={login()}
-                                        className="px-3 py-2 text-sm text-[#e7ebe3] hover:text-white"
+                                        className={`px-3 py-2 text-sm text-[#${theme.colour_text}] hover:text-white`}
                                     >
                                         Log in
                                     </Link>
                                     {canRegister && (
                                         <Link
                                             href={register()}
-                                            className="rounded-full bg-[#d6ff4b] px-4 py-2 text-sm font-semibold text-[#14210a] hover:bg-[#e4ff86]"
+                                            className={`rounded-full bg-[#${theme.colour_primary}] px-4 py-2 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-[#${theme.colour_primary}]`}
                                         >
                                             Get started
                                         </Link>
@@ -173,7 +183,7 @@ export default function Welcome({
                         </div>
                         <button
                             type="button"
-                            className="rounded-md border border-white/15 px-3 py-1.5 text-sm md:hidden"
+                            className={`rounded-md border border-white/15 px-3 py-1.5 text-sm md:hidden`}
                             aria-expanded={open}
                             onClick={() => setOpen((value) => !value)}
                         >
@@ -181,7 +191,7 @@ export default function Welcome({
                         </button>
                     </div>
                     {open && (
-                        <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 text-sm md:hidden">
+                        <div className={`flex flex-col gap-3 border-t border-white/10 px-5 py-4 text-sm md:hidden`}>
                             <a href="#features" onClick={() => setOpen(false)}>
                                 Features
                             </a>
@@ -206,60 +216,60 @@ export default function Welcome({
                 </header>
 
                 <main id="top">
-                    <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:py-24">
+                    <section className={`mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:py-24`}>
                         <div>
-                            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#d6ff4b]/30 bg-[#d6ff4b]/10 px-3 py-1 text-xs font-medium tracking-wide text-[#d6ff4b] uppercase">
+                            <p className={`mb-4 inline-flex items-center gap-2 rounded-full border border-[#${theme.colour_primary}]/30 bg-[#${theme.colour_primary}]/10 px-3 py-1 text-xs font-medium tracking-wide text-[#${theme.colour_primary}] uppercase`}>
                                 For clubs, leagues, and one-off cups
                             </p>
                             <h1 className="max-w-xl text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl">
                                 Run the tournament from the first draw to the final whistle.
                             </h1>
-                            <p className="mt-5 max-w-lg text-lg leading-relaxed text-[#c5ccc0]">
+                            <p className={`mt-5 max-w-lg text-lg leading-relaxed text-[#${theme.colour_text}]`}>
                                 Bazinga
                             </p>
                             <div className="mt-8 flex flex-wrap items-center gap-3">
                                 <Link
                                     href={primaryHref}
-                                    className="rounded-full bg-[#d6ff4b] px-5 py-3 text-sm font-semibold text-[#14210a] hover:bg-[#e4ff86]"
+                                    className={`rounded-full bg-[#${theme.colour_primary}] px-5 py-3 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-[#${theme.colour_primary}]`}
                                 >
                                     {primaryLabel}
                                 </Link>
                                 <a
                                     href="#draw"
-                                    className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-[#f4f1ea] hover:border-white/40"
+                                    className={`rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-[#${theme.colour_text}] hover:border-white/40`}
                                 >
                                     See a sample draw
                                 </a>
                             </div>
                         </div>
 
-                        <div className="rounded-3xl border border-white/10 bg-[#18211c] p-5 shadow-[0_30px_80px_-40px_rgba(214,255,75,0.45)]">
+                            <div className={`rounded-3xl border border-white/10 bg-[#${theme.colour_highlight}] p-5 shadow-[0_30px_80px_-40px_rgba(200,162,200,0.45)]`}>
                             <div className="mb-4 flex items-center justify-between">
                                 <div>
-                                    <p className="text-xs tracking-wide text-[#9aa596] uppercase">
+                                    <p className={`text-xs tracking-wide text-[#${theme.colour_text}] uppercase`}>
                                         Harbour Cup
                                     </p>
                                     <p className="text-lg font-semibold">This weekend</p>
                                 </div>
-                                <span className="rounded-full bg-[#d6ff4b]/15 px-3 py-1 text-xs font-medium text-[#d6ff4b]">
+                                <span className={`rounded-full bg-[#${theme.colour_primary}]/15 px-3 py-1 text-xs font-medium text-[#${theme.colour_primary}]`}>
                                     8 teams
                                 </span>
                             </div>
                             <ul className="space-y-2">
                                 {fixtures.map((f) => {
-                                    let teamA = teams.find((t) => f.team_a_id == t.id);
-                                    let teamB = teams.find((t) => f.team_b_id == t.id);
+                                    let teamA = teams.find((t) => f.team_a_id == t.id) || {id: 0, name: 'Unknown'};
+                                    let teamB = teams.find((t) => f.team_b_id == t.id) || {id: 0, name: 'Unknown'};
                                     return <li
                                         key={`${teamA.name}}-${teamB.name}`}
-                                        className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-2xl bg-[#101612] px-4 py-3"
+                                        className={`grid grid-cols-[1fr_auto] items-center gap-3 rounded-2xl bg-[#${theme.colour_background}] px-4 py-3`}
                                     >
                                         <div>
-                                            <p className="text-xs text-[#8f988c]">
+                                            <p className={`text-xs text-[#${theme.colour_text}]`}>
                                                 {f.group}
                                             </p>
                                             <p className="font-medium">
                                                 {teamA.name}
-                                                <span className="mx-2 text-[#8f988c]">
+                                                <span className={`mx-2 text-[#${theme.colour_text}]`}>
                                                     vs
                                                 </span>
                                                 {teamB.name}
@@ -272,7 +282,7 @@ export default function Welcome({
                                             <p
                                                 className={
                                                     f.live
-                                                        ? 'text-xs text-[#d6ff4b]'
+                                                        ? 'text-xs text-[#c8a2c8]'
                                                         : 'text-xs text-[#8f988c]'
                                                 }
                                             >
@@ -285,7 +295,7 @@ export default function Welcome({
                         </div>
                     </section>
 
-                    <section className="border-y border-white/10 bg-[#0c110f]">
+                    <section className={`border-y border-white/10 bg-[#${theme.colour_secondary}]`}>
                         <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-8 sm:grid-cols-4">
                             {[
                                 ['Clubs', 'One roster'],
@@ -294,7 +304,7 @@ export default function Welcome({
                                 ['Events', 'Goals and cards'],
                             ].map(([label, value]) => (
                                 <div key={label}>
-                                    <dt className="text-sm text-[#8f988c]">{label}</dt>
+                                    <dt className="text-sm">{label}</dt>
                                     <dd className="mt-1 text-lg font-medium">{value}</dd>
                                 </div>
                             ))}
@@ -306,7 +316,7 @@ export default function Welcome({
                             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                                 Everything between the entry list and the trophy.
                             </h2>
-                            <p className="mt-3 text-[#c5ccc0]">
+                            <p className={`mt-3 text-[#${theme.colour_text_faded}]`}>
                                 Built around the same pieces a real competition
                                 already has: clubs, teams, a tournament, and the
                                 games that decide it.
@@ -319,9 +329,9 @@ export default function Welcome({
                                 return (
                                     <article
                                         key={feature.title}
-                                        className="rounded-3xl border border-white/10 bg-[#18211c] p-6"
+                                        className={`rounded-3xl border border-white/10 bg-[#${theme.colour_highlight}] p-6`}
                                     >
-                                        <Icon className="size-5 text-[#d6ff4b]" />
+                                        <Icon className={`size-5 text-[#${theme.colour_primary}]`} />
                                         <h3 className="mt-4 text-xl font-semibold">
                                             {feature.title}
                                         </h3>
@@ -334,30 +344,30 @@ export default function Welcome({
                         </div>
                     </section>
 
-                    <section id="draw" className="bg-[#0c110f] py-20">
+                    <section id="draw" className={`bg-[#${theme.colour_secondary}] py-20`}>
                         <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 lg:grid-cols-2">
                             <div>
                                 <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                                     A draw people can read from the stand.
                                 </h2>
-                                <p className="mt-3 text-[#c5ccc0]">
+                                <p className={`mt-3 text-[#${theme.colour_text_faded}]`}>
                                     Groups, kickoffs, and the path to the final
                                     sit on one board. Change a team and the
                                     fixture list stays in step.
                                 </p>
-                                <ul className="mt-6 space-y-3 text-sm text-[#e7ebe3]">
+                                <ul className={`mt-6 space-y-3 text-sm text-[#${theme.colour_text}]`}>
                                     <li className="flex gap-3">
-                                        <Users className="mt-0.5 size-4 shrink-0 text-[#d6ff4b]" />
+                                        <Users className={`mt-0.5 size-4 shrink-0 text-[#${theme.colour_primary}]`} />
                                         Enter clubs once, then attach as many teams as the age groups need.
                                     </li>
                                     <li className="flex gap-3">
-                                        <CalendarDays className="mt-0.5 size-4 shrink-0 text-[#d6ff4b]" />
+                                        <CalendarDays className={`mt-0.5 size-4 shrink-0 text-[#${theme.colour_primary}]`} />
                                         Set start and end dates, then fill the weekend with real kickoff times.
                                     </li>
                                 </ul>
                             </div>
-                            <div className="rounded-3xl border border-white/10 bg-[#18211c] p-6">
-                                <p className="text-xs tracking-wide text-[#9aa596] uppercase">
+                            <div className={`rounded-3xl border border-white/10 bg-[#${theme.colour_highlight}] p-6`}>
+                                <p className={`text-xs tracking-wide text-[#${theme.colour_text_faded}] uppercase`}>
                                     Path to the final
                                 </p>
                                 <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm">
@@ -365,10 +375,10 @@ export default function Welcome({
                                         <FixturePill home="Riverside" away="Kingsway" />
                                         <FixturePill home="Milltown" away="Priory" />
                                     </div>
-                                    <div className="h-24 w-px bg-[#d6ff4b]/40" />
-                                    <div className="rounded-2xl bg-[#d6ff4b] px-4 py-5 text-center font-semibold text-[#14210a]">
+                                    <div className={`h-24 w-px bg-[#${theme.colour_highlight}]/40`} />
+                                    <div className={`rounded-2xl bg-[#${theme.colour_highlight}] px-4 py-5 text-center font-semibold text-[#${theme.colour_text}]`}>
                                         Final
-                                        <p className="mt-1 text-xs font-medium">
+                                        <p className={`mt-1 text-xs font-medium text-[#${theme.colour_text_faded}]`}>
                                             Sun · 15:00
                                         </p>
                                     </div>
@@ -387,29 +397,29 @@ export default function Welcome({
                                 ['02', 'Add the sides', 'Bring in clubs and the teams that will actually play.'],
                                 ['03', 'Publish the draw', 'Share fixtures, then record the result as each game finishes.'],
                             ].map(([step, title, copy]) => (
-                                <li key={step} className="border-t border-[#d6ff4b]/40 pt-4">
-                                    <p className="text-sm font-medium text-[#d6ff4b]">{step}</p>
+                                <li key={step} className="border-t border-[#c8a2c8]/40 pt-4">
+                                    <p className={`text-sm font-medium text-[#${theme.colour_primary}]`}>{step}</p>
                                     <h3 className="mt-2 text-xl font-semibold">{title}</h3>
-                                    <p className="mt-2 text-[#c5ccc0]">{copy}</p>
+                                    <p className={`mt-2 text-[#${theme.colour_text_faded}]`}>{copy}</p>
                                 </li>
                             ))}
                         </ol>
                     </section>
 
                     <section className="px-5 pb-20">
-                        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-3xl bg-[#d6ff4b] px-8 py-10 text-[#14210a] sm:flex-row sm:items-center">
+                        <div className={`mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-3xl bg-[#${theme.colour_primary}] px-8 py-10 text-[#${theme.colour_text}] sm:flex-row sm:items-center`}>
                             <div>
                                 <h2 className="text-3xl font-semibold tracking-tight">
                                     Put the next cup on the board.
                                 </h2>
-                                <p className="mt-2 max-w-xl text-[#243312]">
+                                <p className={`mt-2 max-w-xl text-[#${theme.colour_secondary}]`}>
                                     Create the tournament, invite the clubs, and
                                     stop passing the spreadsheet around the group chat.
                                 </p>
                             </div>
                             <Link
                                 href={primaryHref}
-                                className="shrink-0 rounded-full bg-[#14210a] px-5 py-3 text-sm font-semibold text-[#f4f1ea] hover:bg-black"
+                                className={`shrink-0 rounded-full bg-[#${theme.colour_background}] px-5 py-3 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-black`}
                             >
                                 {primaryLabel}
                             </Link>
@@ -418,7 +428,7 @@ export default function Welcome({
                 </main>
 
                 <footer className="border-t border-white/10">
-                    <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-sm text-[#8f988c] sm:flex-row sm:items-center sm:justify-between">
+                    <div className={`mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-sm text-[#${theme.colour_text_faded}] sm:flex-row sm:items-center sm:justify-between`}>
                         <p>Touchline · tournament organising</p>
                         <p>Clubs, teams, fixtures, and the final whistle.</p>
                     </div>
@@ -430,9 +440,9 @@ export default function Welcome({
 
 function FixturePill({ home, away }: { home: string; away: string }) {
     return (
-        <div className="rounded-2xl bg-[#101612] px-4 py-3">
+        <div className={`rounded-2xl bg-[#${theme.colour_background}] px-4 py-3`}>
             <p>{home}</p>
-            <p className="text-[#8f988c]">{away}</p>
+            <p className={`text-[#${theme.colour_text_faded}]`}>{away}</p>
         </div>
     );
 }

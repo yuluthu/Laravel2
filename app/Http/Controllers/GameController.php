@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Controller;
 
 use App\game;
 use App\Http\Requests\StoreGameRequest;
