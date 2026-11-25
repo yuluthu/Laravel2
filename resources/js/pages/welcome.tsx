@@ -5,9 +5,19 @@ import {
     Shield,
     Trophy,
     Users,
+    RefreshCw
 } from 'lucide-react';
-import { useState } from 'react';
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+    type CSSProperties,
+} from 'react';
+import Query from '@/api/Query';
 import { dashboard, login, register } from '@/routes';
+import Dashboard from './dashboard';
 
 const theme = {
     colour_background: '120b12',
@@ -19,79 +29,38 @@ const theme = {
     colour_highlight: '5c375c',
 }
 
-const fixtures = [
-    {
-        group: 'Group A',
-        team_a_id: 1,
-        team_b_id: 2,
-        team_a_score: 2,
-        team_b_score: 1,
-        when: 'Full time',
-        live: false,
-    },
-    {
-        group: 'Group A',
-        team_a_id: 3,
-        team_b_id: 4,
-        team_a_score: 2,
-        team_b_score: 1,
-        when: 'Sat · 14:00',
-        live: true,
-    },
-    {
-        group: 'Group B',
-        team_a_id: 5,
-        team_b_id: 6,
-        team_a_score: 2,
-        team_b_score: 1,
-        when: 'Sat · 16:30',
-        live: false,
-    },
-    {
-        group: 'Group B',
-        team_a_id: 7,
-        team_b_id: 8,
-        team_a_score: 2,
-        team_b_score: 1,
-        when: 'Sun · 11:00',
-        live: false,
-    },
-];
+type BoardTeam = {
+    id: number;
+    name: string;
+};
 
-const teams = [
-    {
-        id: 1,
-        name: 'Riverside',
-    },
-    {
-        id: 2,
-        name: 'Harbour',
-    },
-    {
-        id: 3,
-        name: 'North End',
-    },
-    {
-        id: 4,
-        name: 'Kingsway',
-    },
-    {
-        id: 5,
-        name: 'Milltown',
-    },
-    {
-        id: 6,
-        name: 'Oakfield',
-    },
-    {
-        id: 7,
-        name: 'Westgate',
-    },
-    {
-        id: 8,
-        name: 'Priory',
-    },
-];
+type BoardFixture = {
+    group: string;
+    team_a_id: number;
+    team_b_id: number;
+    team_a_score: number | null;
+    team_b_score: number | null;
+    when: string;
+    live: boolean;
+};
+
+type Board = {
+    tournament: string;
+    polled_at: string;
+    source: string;
+    teams: BoardTeam[];
+    fixtures: BoardFixture[];
+};
+
+const themeStyle = {
+    '--tl-bg': `#${theme.colour_background}`,
+    '--tl-dark': `#${theme.colour_dark}`,
+    '--tl-primary': `#${theme.colour_primary}`,
+    '--tl-secondary': `#${theme.colour_secondary}`,
+    '--tl-text': `#${theme.colour_text}`,
+    '--tl-faded': `#${theme.colour_text_faded}`,
+    '--tl-highlight': `#${theme.colour_highlight}`,
+} as CSSProperties;
 
 const features = [
     {
@@ -116,68 +85,72 @@ const features = [
     },
 ];
 
+const TeamsContext = createContext<BoardTeam[]>([]);
+
+function useTeams(): BoardTeam[] {
+    return useContext(TeamsContext);
+}
+
 export default function Welcome({
     canRegister = true,
+    board,
 }: {
     canRegister?: boolean;
+    board: Board;
 }) {
     const { auth } = usePage().props;
     const [open, setOpen] = useState(false);
+    const { board: liveBoard, teams, status, refresh } = useBoardPoll(board);
 
     const primaryHref = auth.user ? dashboard() : canRegister ? register() : login();
-    const primaryLabel = auth.user
-        ? 'Open dashboard'
-        : canRegister
-          ? 'Start a tournament'
-          : 'Log in';
-
     return (
-        <>
-            <Head title="Touchline — tournament organising" />
-            <div className={`min-h-screen bg-[#${theme.colour_background}] text-[#${theme.colour_text}]`}>
-                <header className={`sticky top-0 z-20 border-b border-white/10 bg-[#${theme.colour_background}]/90 backdrop-blur`}>
+        <TeamsContext.Provider value={teams}>
+            <Head title="QuadTrack" />
+            <div
+                className="min-h-screen bg-[var(--tl-bg)] text-[var(--tl-text)]"
+                style={themeStyle}
+            >
+                <header className={`sticky top-0 z-20 border-b border-white/10 bg-[color-mix(in_srgb,var(--tl-bg)_90%,transparent)] backdrop-blur`}>
                     <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
                         <a href="#top" className="flex items-center gap-2 font-semibold tracking-tight">
-                            <span className={`grid size-8 place-items-center rounded-full bg-[#${theme.colour_primary}] text-[#${theme.colour_text}]`}>
+                            <span className={`grid size-8 place-items-center rounded-full bg-[var(--tl-primary)] text-[var(--tl-text)]`}>
                                 <Trophy className="size-4" />
                             </span>
-                            Touchline
+                            QuadTrack
                         </a>
-                        <nav className={`hidden items-center gap-8 text-sm text-[#${theme.colour_text}] md:flex`}>
+                        <nav className={`hidden items-center gap-8 text-sm text-[var(--tl-text)] md:flex`}>
                             <a href="#features" className="hover:text-white">
-                                Features
+                                Tournaments
                             </a>
                             <a href="#draw" className="hover:text-white">
-                                The draw
+                                Clubs
                             </a>
                             <a href="#how" className="hover:text-white">
-                                How it works
+                                Teams
                             </a>
                         </nav>
                         <div className="hidden items-center gap-3 md:flex">
                             {auth.user ? (
                                 <Link
                                     href={dashboard()}
-                                    className={`rounded-full bg-[#${theme.colour_primary}] px-4 py-2 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-[#${theme.colour_primary}]`}
+                                    className={`rounded-full bg-[var(--tl-primary)] px-4 py-2 text-sm font-semibold text-[var(--tl-text)] hover:bg-[var(--tl-primary)]`}
                                 >
                                     Dashboard
                                 </Link>
                             ) : (
                                 <>
                                     <Link
-                                        href={login()}
-                                        className={`px-3 py-2 text-sm text-[#${theme.colour_text}] hover:text-white`}
+                                        href={register()}
+                                        className={`px-3 py-2 text-sm text-[var(--tl-text)] hover:text-white`}
                                     >
-                                        Log in
+                                        Register
                                     </Link>
-                                    {canRegister && (
-                                        <Link
-                                            href={register()}
-                                            className={`rounded-full bg-[#${theme.colour_primary}] px-4 py-2 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-[#${theme.colour_primary}]`}
-                                        >
-                                            Get started
-                                        </Link>
-                                    )}
+                                    <Link
+                                        href={login()}
+                                        className={`rounded-full bg-[var(--tl-primary)] px-4 py-2 text-sm font-semibold text-[var(--tl-text)] hover:bg-[var(--tl-primary)]`}
+                                    >
+                                        Login
+                                    </Link>
                                 </>
                             )}
                         </div>
@@ -218,231 +191,170 @@ export default function Welcome({
                 <main id="top">
                     <section className={`mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:py-24`}>
                         <div>
-                            <p className={`mb-4 inline-flex items-center gap-2 rounded-full border border-[#${theme.colour_primary}]/30 bg-[#${theme.colour_primary}]/10 px-3 py-1 text-xs font-medium tracking-wide text-[#${theme.colour_primary}] uppercase`}>
+                            <p className={`mb-4 inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--tl-primary)_30%,transparent)] bg-[color-mix(in_srgb,var(--tl-primary)_10%,transparent)] px-3 py-1 text-xs font-medium tracking-wide text-[var(--tl-primary)] uppercase`}>
                                 For clubs, leagues, and one-off cups
                             </p>
                             <h1 className="max-w-xl text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl">
-                                Run the tournament from the first draw to the final whistle.
+                                QuadTrack
                             </h1>
-                            <p className={`mt-5 max-w-lg text-lg leading-relaxed text-[#${theme.colour_text}]`}>
+                            <p className={`mt-5 max-w-lg text-lg leading-relaxed text-[var(--tl-text)]`}>
                                 Bazinga
                             </p>
                             <div className="mt-8 flex flex-wrap items-center gap-3">
                                 <Link
-                                    href={primaryHref}
-                                    className={`rounded-full bg-[#${theme.colour_primary}] px-5 py-3 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-[#${theme.colour_primary}]`}
+                                    href={login()}
+                                    className={`rounded-full bg-[var(--tl-primary)] px-5 py-3 text-sm font-semibold text-[var(--tl-text)] hover:bg-[var(--tl-primary)]`}
                                 >
-                                    {primaryLabel}
+                                    View Tournaments
                                 </Link>
                                 <a
                                     href="#draw"
-                                    className={`rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-[#${theme.colour_text}] hover:border-white/40`}
+                                    className={`rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-[var(--tl-text)] hover:border-white/40`}
                                 >
                                     See a sample draw
                                 </a>
                             </div>
                         </div>
 
-                            <div className={`rounded-3xl border border-white/10 bg-[#${theme.colour_highlight}] p-5 shadow-[0_30px_80px_-40px_rgba(200,162,200,0.45)]`}>
-                            <div className="mb-4 flex items-center justify-between">
+                            <div className="rounded-3xl border border-white/10 bg-[var(--tl-highlight)] p-5 shadow-[0_30px_80px_-40px_rgba(200,162,200,0.45)]">
+                            <div className="mb-4 flex items-center justify-between gap-3">
                                 <div>
-                                    <p className={`text-xs tracking-wide text-[#${theme.colour_text}] uppercase`}>
-                                        Harbour Cup
+                                    <p className="text-xs tracking-wide text-[var(--tl-text)]">
+                                    Latest Tournament:
                                     </p>
-                                    <p className="text-lg font-semibold">This weekend</p>
+                                    <p className="text-lg font-semibold">{liveBoard.tournament}</p>
                                 </div>
-                                <span className={`rounded-full bg-[#${theme.colour_primary}]/15 px-3 py-1 text-xs font-medium text-[#${theme.colour_primary}]`}>
-                                    8 teams
-                                </span>
+                                <div>
+                                    <span className="rounded-full bg-[color-mix(in_srgb,var(--tl-primary)_15%,transparent)] align-sub  p-2 text-xs font-medium text-[var(--tl-primary)]">
+                                        {status === 'error'
+                                            ? 'Offline'
+                                            : `Updated ${formatPolledAt(liveBoard.polled_at)}`}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="rounded-full bg-[color-mix(in_srgb,var(--tl-primary)_15%,transparent)] align-top ml-2 mr-1 p-2 text-[var(--tl-primary)]"
+                                        aria-label="Refresh the board"
+                                        onClick={() => void refresh()}
+                                        >
+                                        <RefreshCw className="text-sm size-4" />
+                                    </button>
+                                </div>
                             </div>
                             <ul className="space-y-2">
-                                {fixtures.map((f) => {
-                                    let teamA = teams.find((t) => f.team_a_id == t.id) || {id: 0, name: 'Unknown'};
-                                    let teamB = teams.find((t) => f.team_b_id == t.id) || {id: 0, name: 'Unknown'};
-                                    return <li
-                                        key={`${teamA.name}}-${teamB.name}`}
-                                        className={`grid grid-cols-[1fr_auto] items-center gap-3 rounded-2xl bg-[#${theme.colour_background}] px-4 py-3`}
+                                {liveBoard.fixtures.map((fixture) => {
+                                    return (
+                                    <li
+                                        key={`${fixture.team_a_id}-${fixture.team_b_id}-${fixture.when}`}
+                                        className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-2xl bg-[var(--tl-bg)] px-4 py-3"
                                     >
                                         <div>
-                                            <p className={`text-xs text-[#${theme.colour_text}]`}>
-                                                {f.group}
+                                            <p className="text-xs text-[var(--tl-text)]">
+                                                {fixture.group}
                                             </p>
                                             <p className="font-medium">
-                                                {teamA.name}
-                                                <span className={`mx-2 text-[#${theme.colour_text}]`}>
+                                                <TeamName id={fixture.team_a_id} />
+                                                <span className="mx-2 text-[var(--tl-text)]">
                                                     vs
                                                 </span>
-                                                {teamB.name}
+                                                <TeamName id={fixture.team_b_id} />
                                             </p>
                                         </div>
                                         <div className="text-right">
                                             <p className="font-semibold tabular-nums">
-                                                {f.team_a_score} - {f.team_b_score}
+                                                {scoreLabel(fixture)}
                                             </p>
                                             <p
                                                 className={
-                                                    f.live
-                                                        ? 'text-xs text-[#c8a2c8]'
-                                                        : 'text-xs text-[#8f988c]'
+                                                    fixture.live
+                                                        ? 'text-xs text-[var(--tl-primary)]'
+                                                        : 'text-xs text-[var(--tl-dark)]'
                                                 }
                                             >
-                                                {f.when}
+                                                {fixture.when}
                                             </p>
                                         </div>
                                     </li>
+                                    );
                                 })}
                             </ul>
                         </div>
                     </section>
 
-                    <section className={`border-y border-white/10 bg-[#${theme.colour_secondary}]`}>
-                        <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-8 sm:grid-cols-4">
-                            {[
-                                ['Clubs', 'One roster'],
-                                ['Teams', 'Grouped by club'],
-                                ['Fixtures', 'Kickoff locked'],
-                                ['Events', 'Goals and cards'],
-                            ].map(([label, value]) => (
-                                <div key={label}>
-                                    <dt className="text-sm">{label}</dt>
-                                    <dd className="mt-1 text-lg font-medium">{value}</dd>
-                                </div>
-                            ))}
-                        </dl>
-                    </section>
-
-                    <section id="features" className="mx-auto max-w-6xl px-5 py-20">
-                        <div className="max-w-2xl">
-                            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                                Everything between the entry list and the trophy.
-                            </h2>
-                            <p className={`mt-3 text-[#${theme.colour_text_faded}]`}>
-                                Built around the same pieces a real competition
-                                already has: clubs, teams, a tournament, and the
-                                games that decide it.
-                            </p>
-                        </div>
-                        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-                            {features.map((feature) => {
-                                const Icon = feature.icon;
-
-                                return (
-                                    <article
-                                        key={feature.title}
-                                        className={`rounded-3xl border border-white/10 bg-[#${theme.colour_highlight}] p-6`}
-                                    >
-                                        <Icon className={`size-5 text-[#${theme.colour_primary}]`} />
-                                        <h3 className="mt-4 text-xl font-semibold">
-                                            {feature.title}
-                                        </h3>
-                                        <p className="mt-2 leading-relaxed text-[#c5ccc0]">
-                                            {feature.copy}
-                                        </p>
-                                    </article>
-                                );
-                            })}
-                        </div>
-                    </section>
-
-                    <section id="draw" className={`bg-[#${theme.colour_secondary}] py-20`}>
-                        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 lg:grid-cols-2">
-                            <div>
-                                <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                                    A draw people can read from the stand.
-                                </h2>
-                                <p className={`mt-3 text-[#${theme.colour_text_faded}]`}>
-                                    Groups, kickoffs, and the path to the final
-                                    sit on one board. Change a team and the
-                                    fixture list stays in step.
-                                </p>
-                                <ul className={`mt-6 space-y-3 text-sm text-[#${theme.colour_text}]`}>
-                                    <li className="flex gap-3">
-                                        <Users className={`mt-0.5 size-4 shrink-0 text-[#${theme.colour_primary}]`} />
-                                        Enter clubs once, then attach as many teams as the age groups need.
-                                    </li>
-                                    <li className="flex gap-3">
-                                        <CalendarDays className={`mt-0.5 size-4 shrink-0 text-[#${theme.colour_primary}]`} />
-                                        Set start and end dates, then fill the weekend with real kickoff times.
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className={`rounded-3xl border border-white/10 bg-[#${theme.colour_highlight}] p-6`}>
-                                <p className={`text-xs tracking-wide text-[#${theme.colour_text_faded}] uppercase`}>
-                                    Path to the final
-                                </p>
-                                <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm">
-                                    <div className="space-y-3">
-                                        <FixturePill home="Riverside" away="Kingsway" />
-                                        <FixturePill home="Milltown" away="Priory" />
-                                    </div>
-                                    <div className={`h-24 w-px bg-[#${theme.colour_highlight}]/40`} />
-                                    <div className={`rounded-2xl bg-[#${theme.colour_highlight}] px-4 py-5 text-center font-semibold text-[#${theme.colour_text}]`}>
-                                        Final
-                                        <p className={`mt-1 text-xs font-medium text-[#${theme.colour_text_faded}]`}>
-                                            Sun · 15:00
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section id="how" className="mx-auto max-w-6xl px-5 py-20">
-                        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                            Three steps, then you are on the pitch.
-                        </h2>
-                        <ol className="mt-10 grid gap-6 md:grid-cols-3">
-                            {[
-                                ['01', 'Open the competition', 'Name the tournament, pick the dates, and choose the format.'],
-                                ['02', 'Add the sides', 'Bring in clubs and the teams that will actually play.'],
-                                ['03', 'Publish the draw', 'Share fixtures, then record the result as each game finishes.'],
-                            ].map(([step, title, copy]) => (
-                                <li key={step} className="border-t border-[#c8a2c8]/40 pt-4">
-                                    <p className={`text-sm font-medium text-[#${theme.colour_primary}]`}>{step}</p>
-                                    <h3 className="mt-2 text-xl font-semibold">{title}</h3>
-                                    <p className={`mt-2 text-[#${theme.colour_text_faded}]`}>{copy}</p>
-                                </li>
-                            ))}
-                        </ol>
-                    </section>
-
-                    <section className="px-5 pb-20">
-                        <div className={`mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-3xl bg-[#${theme.colour_primary}] px-8 py-10 text-[#${theme.colour_text}] sm:flex-row sm:items-center`}>
-                            <div>
-                                <h2 className="text-3xl font-semibold tracking-tight">
-                                    Put the next cup on the board.
-                                </h2>
-                                <p className={`mt-2 max-w-xl text-[#${theme.colour_secondary}]`}>
-                                    Create the tournament, invite the clubs, and
-                                    stop passing the spreadsheet around the group chat.
-                                </p>
-                            </div>
-                            <Link
-                                href={primaryHref}
-                                className={`shrink-0 rounded-full bg-[#${theme.colour_background}] px-5 py-3 text-sm font-semibold text-[#${theme.colour_text}] hover:bg-black`}
-                            >
-                                {primaryLabel}
-                            </Link>
-                        </div>
-                    </section>
                 </main>
 
                 <footer className="border-t border-white/10">
-                    <div className={`mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-sm text-[#${theme.colour_text_faded}] sm:flex-row sm:items-center sm:justify-between`}>
-                        <p>Touchline · tournament organising</p>
-                        <p>Clubs, teams, fixtures, and the final whistle.</p>
+                    <div className={`mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-sm text-[var(--tl-faded)] sm:flex-row sm:items-center sm:justify-between`}>
+                        <p>QuadTrack</p>
+                        <p>Clubs, teams, fixtures.</p>
                     </div>
                 </footer>
             </div>
-        </>
+        </TeamsContext.Provider>
     );
+}
+
+function useBoardPoll(initial: Board): {
+    board: Board;
+    teams: BoardTeam[];
+    status: 'live' | 'error';
+    refresh: () => Promise<void>;
+} {
+    const [board, setBoard] = useState(initial);
+    const [teams, setTeams] = useState<BoardTeam[]>(initial.teams);
+    const [status, setStatus] = useState<'live' | 'error'>('live');
+
+    const refresh = useCallback(async () => {
+        try {
+            const next = await Query('board');
+
+            setBoard(next);
+            setTeams(next.teams);
+            setStatus('live');
+        } catch {
+            setStatus('error');
+        }
+    }, []);
+
+    useEffect(() => {
+        void refresh();
+    }, [refresh]);
+
+    return { board, teams, status, refresh };
+}
+
+function TeamName({ id }: { id: number }) {
+    const teams = useTeams();
+
+    return teams.find((team) => team.id === id)?.name ?? 'Unknown';
+}
+
+function scoreLabel(fixture: BoardFixture): string {
+    if (fixture.team_a_score === null || fixture.team_b_score === null) {
+        return '—';
+    }
+
+    return `${fixture.team_a_score}–${fixture.team_b_score}`;
+}
+
+function formatPolledAt(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return 'just now';
+    }
+
+    return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    });
 }
 
 function FixturePill({ home, away }: { home: string; away: string }) {
     return (
-        <div className={`rounded-2xl bg-[#${theme.colour_background}] px-4 py-3`}>
+        <div className={`rounded-2xl bg-[var(--tl-bg)] px-4 py-3`}>
             <p>{home}</p>
-            <p className={`text-[#${theme.colour_text_faded}]`}>{away}</p>
+            <p className={`text-[var(--tl-faded)]`}>{away}</p>
         </div>
     );
 }
